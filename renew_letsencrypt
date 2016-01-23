@@ -1,0 +1,25 @@
+#!/usr/bin/php
+<?php
+$cmd_le = '/usr/local/src/letsencrypt/letsencrypt-auto';
+
+if ($argc<2) {
+  echo "Usage: ".$argv[0]." {domainfile} [{manual|webroot|standalone}]\n";
+  exit;
+}
+$mode = ($argc>1) ? $argv[2] : '';
+if (empty($mode)) $mode='standalone';
+
+$domains = include $argv[1];
+if (!is_array($domains)) {
+  echo "config file error!\n";
+  exit;
+}
+
+$expanded_domains = ' -d ' . join(' -d ',$domains);
+echo "Processing Domains: \n".$expanded_domains."\n\n";
+
+$options = '--config cli.ini -v ';
+$full_cmd = "$cmd_le auth --$mode $options $expanded_domains ";
+
+shell_exec( $full_cmd );
+
